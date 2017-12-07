@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // public class NamedArrayAttribute : PropertyAttribute {
 //     public readonly string[] names;
@@ -9,6 +10,12 @@ using UnityEngine;
 
 [UnityEngine.SerializeField]
 public class Processor : MonoBehaviour {
+
+	/* Editor variables */
+	public Text help;
+	public Text list;
+	public bool helpEnabled;
+	public bool listEnabled;
 
 	/* Serializable variables so we can edit and see them in Unity Editor */
 	public string[] code = new string[1024];
@@ -41,11 +48,20 @@ public class Processor : MonoBehaviour {
 			pipeline[i] = new Instruction();
 			pipestr[i] = pipeline[i].icode;
 		}
+		helpEnabled = true;
+		listEnabled = true;
 	}
 
 	void Update(){
 
-		if(Input.GetKeyDown("h")){  }
+		if(Input.GetKeyDown("h")){ 
+			helpEnabled = !helpEnabled;
+			this.help.gameObject.SetActive(helpEnabled);
+		}
+		if(Input.GetKeyDown("l")){ 
+			listEnabled = !listEnabled;
+			this.list.gameObject.SetActive(listEnabled);
+		}
 
 		if(Input.GetKeyDown("n")){
 
