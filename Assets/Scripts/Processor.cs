@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 // public class NamedArrayAttribute : PropertyAttribute {
 	// public readonly string[] names;
@@ -39,47 +41,63 @@ public class Processor : MonoBehaviour {
 	public int regO1 = 0;
 	public int writeToMem = 0;
 
-	public MuxController muxone;
+	// Graphical game objects
+	public MuxController pcMux;
+	public RegisterController pcReg;
+	public RegisterController A, B;
+	public RegisterController O0, O1;
+	public RegisterFileController regFile;
+	public UlaController ula;
+	public InputField getInstr;
 
-	void Start(){
+	void Start() {
 		instructionMemory = new List<Instruction>();
 		pipeline = new Instruction[5];
 		ClearPipeline();
 		helpEnabled = true;
 		listEnabled = true;
 		ncount = 0;
+
+		getInstr.onEndEdit.AddListener(delegate { AddInstruction(getInstr); });
 	}
 
-	void Update(){
+	void Update() {
 
-		muxone.SetName("MuxPc");
-		//muxone.SetOutput(30);
+		regFile.setValues(registerBank);
+		ula.setInputA(regA);
+		ula.setInputB(regB);
+		ula.setOutput(regO0);
+		pcReg.setValue(pc);
+		A.setValue(regA);
+		B.setValue(regB);
+		O0.setValue(regO0);
+		O1.setValue(regO1);
 
-		if(Input.GetKeyDown("h")){ 
+		if(Input.GetKeyDown("h")) { 
 			helpEnabled = !helpEnabled;
 			this.help.gameObject.SetActive(helpEnabled);
 		}
-		if(Input.GetKeyDown("l")){ 
+		if(Input.GetKeyDown("l")) { 
 			listEnabled = !listEnabled;
 			this.list.gameObject.SetActive(listEnabled);
 		}
 
-		if(Input.GetKeyDown("n") && !halted){
+		if(Input.GetKeyDown("n") && !halted) {
 			ncount = 1;
-			muxone.SetInput(pc+1, pipeline[1].op3, regB);
+			pcMux.SetInput(pc+1, pipeline[1].op3, regB);
 			NextStep();
-			muxone.SetOutput(pc);
+			pcMux.SetOutput(pc);
 		}
 		
-		if(Input.GetKey("n") && ncount++%10 == 0 && !halted){
+		if(Input.GetKey("n") && ncount++%10 == 0 && !halted) {
 
-			muxone.SetInput(pc+1, pipeline[1].op3, regB);
+			pcMux.SetInput(pc+1, pipeline[1].op3, regB);
 			NextStep();
-			muxone.SetOutput(pc);
+			pcMux.SetOutput(pc);
 		}
 	}
 
-	void NextStep(){
+	void NextStep() {
 		
 		Instruction instr;
 		try {
@@ -90,7 +108,7 @@ public class Processor : MonoBehaviour {
     		pipestr[0] = instr.icode;
     	}
 
-		for(int i = 4; i > 0; i--){ // Move pipeline forward
+		for(int i = 4; i > 0; i--) { // Move pipeline forward
 			pipeline[i] = pipeline[i-1];
 			pipestr[i] = pipeline[i].icode;
 		}
@@ -109,7 +127,7 @@ public class Processor : MonoBehaviour {
 
 	/* Pipeline units */
     public void InstructionFetch(int address, 
-    	ref Instruction instr){
+    	ref Instruction instr) {
 
 		try {
 			instr = instructionMemory[this.pc++];
@@ -121,9 +139,9 @@ public class Processor : MonoBehaviour {
 	}
 
 	public void InstructionDecode(Instruction instr, 
-		ref int outputA, ref int outputB){
+		ref int outputA, ref int outputB) {
 
-		switch(instr.type){
+		switch(instr.type) {
 		// R
 		case 'R':
 			// op1 is the destiny register
@@ -151,9 +169,9 @@ public class Processor : MonoBehaviour {
 	}
 
 	public void InstructionExec(Instruction instr, int inputA, int inputB, 
-		ref int output){
+		ref int output) {
 
-		switch(instr.iname){
+		switch(instr.iname) {
 
 		// NOOP
 		case "NOOP":
@@ -214,14 +232,14 @@ public class Processor : MonoBehaviour {
 			break;
 
 		case "BEZ":
-			if(inputA == 0){
+			if(inputA == 0) {
 				pc = inputB-1;
 				// ClearPipeline();
 			}
 			break;
 
 		case "BNZ":
-			if(inputA != 0){
+			if(inputA != 0) {
 				pc = inputB-1;
 				// ClearPipeline();
 			}
@@ -234,7 +252,7 @@ public class Processor : MonoBehaviour {
 	}
 
 	public void InstructionMemory(Instruction instr, int address, int memWriteD, 
-		ref int memReadD){
+		ref int memReadD) {
 
 		// RegO1 = RegO0 (reaproveitando os mesmos registradores)
 		memReadD = address;
@@ -245,7 +263,7 @@ public class Processor : MonoBehaviour {
 			dataMemory[address] = memWriteD;
 	}
 
-	public void InstructionWriteback(Instruction instr, int input){
+	public void InstructionWriteback(Instruction instr, int input) {
 		// Dont write to register bank if instruction doesnt have WB stage
 		// Instruction that dont write to register bank:
 		// NOOP JMP BRANCH0 BRANCH!0 STORE
@@ -260,13 +278,36 @@ public class Processor : MonoBehaviour {
 
 	/* End pipeline units */
 
-	public void ClearPipeline(){
-		for(int i = 0; i < code.Length; i++)
-			instructionMemory.Add(new Instruction(code[i]));
+	public void ClearPipeline() {
+		CodeStringToInstructionMemory();
 
-		for(int i = 0; i < 5; i++){
+		for(int i = 0; i < 5; i++) {
 			pipeline[i] = new Instruction();
 			pipestr[i] = pipeline[i].icode;
 		}
+	}
+
+	public void CodeStringToInstructionMemory() {
+		instructionMemory = new List<Instruction>();
+    	for(int i = 0; i < code.Length; i++)
+      		instructionMemory.Add(new Instruction(code[i]));
+  	}
+
+	public void AddInstruction(InputField addInstr) {
+		string[] tmp;
+		
+		if(addInstr.textComponent.text.Length <= 0)
+			return; 
+
+		tmp = addInstr.textComponent.text.Split(':');
+		
+		try {
+			code[Int32.Parse(tmp[0])] = tmp[1];
+			CodeStringToInstructionMemory();
+		} catch {
+			Debug.Log("U DENSE MOTHER FUCKER");
+		}
+
+		addInstr.textComponent.text = "";
 	}
 }

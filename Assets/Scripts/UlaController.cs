@@ -6,7 +6,6 @@ using UnityEngine.UI;
 [UnityEngine.SerializeField]
 public class UlaController : MonoBehaviour {
 
-    public Text nameText;
     public Text inputAValue;
     public Text inputBValue;
     public Text outputValue;
@@ -21,23 +20,15 @@ public class UlaController : MonoBehaviour {
 		
 	}
 
-    public void setName(string newName)
-    {
-        nameText.text = newName;
-    }
-
-    public void setInputA(int newValue)
-    {
+    public void setInputA(int newValue){
         this.inputAValue.text = newValue.ToString();
     }
 
-    public void setInputB(int newValue)
-    {
+    public void setInputB(int newValue){
         this.inputBValue.text = newValue.ToString();
     }
 
-    public void setOutput(int newValue)
-    {
+    public void setOutput(int newValue){
         this.outputValue.text = newValue.ToString();
     }
 

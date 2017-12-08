@@ -66,7 +66,7 @@ public class Instruction {
 	}
 
 	private void Parse(string icode){
-		
+
 		string[] parts = icode.Split(SEPARATOR);
 		this.iname = parts[0];
 
