@@ -12,6 +12,7 @@ public class Instruction {
 	public static readonly Dictionary<string, char> InstructionSet = 
 		new Dictionary<string, char>{
 			{ "NOOP", 	'N' },
+			{ "HALT", 	'N' },
 			
 			{ "ADD",	'R' },
 			{ "SUB",	'R' },
