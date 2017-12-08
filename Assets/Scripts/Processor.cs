@@ -25,9 +25,6 @@ public class Processor : MonoBehaviour {
 	/* Serializable variables so we can edit and see them in Unity Editor */
 	public string[] code = new string[MEM_SIZE];
 	
-	// [NamedArrayAttribute (new string[] {"Fetch", "Decode", "Execute", "Memory", "Writeback"})]
-	public string[] pipestr;
-
 	// Instruction array constructor intialize to NOOP
 	public Instruction[] pipeline;
 	public int[] registerBank = new int[4];
@@ -52,6 +49,10 @@ public class Processor : MonoBehaviour {
 	public UlaController ula;
 	public InputField getInstr;
 	public MemoryPanelController instrMem, dataMem;
+	public Text[] pipelineText;
+	public static readonly string[] pipelineStages = new string[5] {
+		"IF: ", "ID: ", "EX: ", "MA: ", "WB: "
+	};
 
 	void Start() {
 		instructionMemory = new List<Instruction>();
@@ -105,27 +106,21 @@ public class Processor : MonoBehaviour {
 		Instruction instr;
 		try {
 	    	instr = instructionMemory[this.pc];
-	    	pipestr[0] = instr.icode;
     	} catch {
     		instr = new Instruction();
-    		pipestr[0] = instr.icode;
     	}
 
 		for(int i = 4; i > 0; i--) { // Move pipeline forward
 			pipeline[i] = pipeline[i-1];
-			pipestr[i] = pipeline[i].icode;
+			pipelineText[i].text = pipelineStages[i] + pipeline[i].icode;
 		}
-		pipestr[0] = pipeline[0].icode;
+		pipelineText[0].text = pipelineStages[0] + pipeline[0].icode;
 
 		InstructionWriteback(pipeline[4], regO1);
 		InstructionMemory(pipeline[3], regO0, writeToMem, ref regO1);
 		InstructionExec(pipeline[2], regA, regB, ref regO0);
 		InstructionDecode(pipeline[1], ref regA, ref regB);
 		InstructionFetch(pc, ref pipeline[0]);
-		
-		// Avoid Writeback directly writing to register bank and screwing up
-		// Fetch register bank
-		// registerBank = (int[]) tmpBank.Clone(); 
 	}
 
 	/* Pipeline units */
@@ -134,11 +129,10 @@ public class Processor : MonoBehaviour {
 
 		try {
 			instr = instructionMemory[this.pc++];
-			pipestr[0] = instr.icode;
 		} catch {
 			instr = new Instruction();
-			pipestr[0] = instr.icode;
 		}
+		pipelineText[0].text = pipelineStages[0] + pipeline[0].icode;
 	}
 
 	public void InstructionDecode(Instruction instr, 
@@ -288,7 +282,7 @@ public class Processor : MonoBehaviour {
 
 		for(int i = 0; i < 5; i++) {
 			pipeline[i] = new Instruction();
-			pipestr[i] = pipeline[i].icode;
+			pipelineText[i].text = pipelineStages[i] + pipeline[i].icode;
 		}
 	}
 
