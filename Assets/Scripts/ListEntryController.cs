@@ -23,7 +23,7 @@ public class ListEntryController : MonoBehaviour {
         index.text = newIndex.ToString() + ':';
     }
 
-    public void setValue(int newValue) {
-        value.text = newValue.ToString();
+    public void setValue(string newValue) {
+        value.text = newValue;
     }
 }

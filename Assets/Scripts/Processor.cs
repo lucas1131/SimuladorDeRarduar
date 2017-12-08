@@ -13,15 +13,17 @@ using UnityEngine.Events;
 [UnityEngine.SerializeField]
 public class Processor : MonoBehaviour {
 
+	public static readonly int MEM_SIZE = 25;
+
 	/* Editor variables */
-	public Text help;
-	public Text list;
+	[UnityEngine.SerializeField] private Text help;
+	[UnityEngine.SerializeField] private Text list;
 	private bool helpEnabled;
 	private bool listEnabled;
 	private int ncount;
 
 	/* Serializable variables so we can edit and see them in Unity Editor */
-	public string[] code = new string[1024];
+	public string[] code = new string[MEM_SIZE];
 	
 	// [NamedArrayAttribute (new string[] {"Fetch", "Decode", "Execute", "Memory", "Writeback"})]
 	public string[] pipestr;
@@ -29,10 +31,10 @@ public class Processor : MonoBehaviour {
 	// Instruction array constructor intialize to NOOP
 	public Instruction[] pipeline;
 	public int[] registerBank = new int[4];
-	public int[] dataMemory = new int[1024]; 	// Memory is word oriented
-	public List<Instruction> instructionMemory; // Memory is word oriented
+	public int[] dataMemory = new int[MEM_SIZE]; 	// Memory is word oriented
+	public List<Instruction> instructionMemory; 	// Memory is word oriented
 
-
+	// Processor registers and flags
 	public bool halted = false;
 	public int pc = 0;
 	public int branchPc = 0;
@@ -49,6 +51,7 @@ public class Processor : MonoBehaviour {
 	public RegisterFileController regFile;
 	public UlaController ula;
 	public InputField getInstr;
+	public MemoryPanelController instrMem, dataMem;
 
 	void Start() {
 		instructionMemory = new List<Instruction>();
@@ -259,8 +262,10 @@ public class Processor : MonoBehaviour {
 
 		if(instr.iname.Equals("LW"))
 			memReadD = dataMemory[address];
-		else if(instr.iname.Equals("SW"))
+		else if(instr.iname.Equals("SW")){
 			dataMemory[address] = memWriteD;
+			dataMem.setValue(address, memWriteD.ToString());
+		}
 	}
 
 	public void InstructionWriteback(Instruction instr, int input) {
@@ -289,8 +294,10 @@ public class Processor : MonoBehaviour {
 
 	public void CodeStringToInstructionMemory() {
 		instructionMemory = new List<Instruction>();
-    	for(int i = 0; i < code.Length; i++)
+    	for(int i = 0; i < code.Length; i++){
       		instructionMemory.Add(new Instruction(code[i]));
+      		instrMem.setValue(i, code[i]);
+    	}
   	}
 
 	public void AddInstruction(InputField addInstr) {

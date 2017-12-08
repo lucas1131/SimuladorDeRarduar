@@ -11,21 +11,19 @@ public class MemoryPanelController : MonoBehaviour {
     public GameObject prefab;
     public Transform content;
 
-    ListEntryController[] entries = new ListEntryController[25];
+    ListEntryController[] entries = new ListEntryController[Processor.MEM_SIZE];
     
 	// Use this for initialization
 	void Start () {
 
         memoryNameText.text = memoryName;
 
-        for (int i = 0; i < entries.Length; i++)
-        {
+        for (int i = 0; i < entries.Length; i++){
             GameObject tmp = Instantiate(prefab,content);
             entries[i] = tmp.GetComponent<ListEntryController>();
             entries[i].setIndex(i);
-            entries[i].setValue(0);
+            entries[i].setValue("0");
         }
-
     }
 
     // Update is called once per frame
@@ -33,11 +31,12 @@ public class MemoryPanelController : MonoBehaviour {
 
     }
 
-    void setValue(int index, int value) {
+    public void setValue(int index, string value) {
+        // Debug.Log(index);
         this.entries[index].setValue(value);
     }
 
-    void setValues(int[] values) {
+    public void setValues(string[] values) {
         for(int i = 0; i < values.Length; i++) {
             this.entries[i].setValue(values[i]);
         }
