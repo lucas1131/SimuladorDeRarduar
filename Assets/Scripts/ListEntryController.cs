@@ -20,7 +20,7 @@ public class ListEntryController : MonoBehaviour {
 	}
 
     public void setIndex(int newIndex) {
-        index.text = newIndex.ToString();
+        index.text = newIndex.ToString() + ':';
     }
 
     public void setValue(int newValue) {
