@@ -5,4 +5,4 @@ Grupo:
 	- Lucas Alexandre Soares		9293265
 	- Rafael Augusto Monteiro		9293095
 
-Professora Sarita
+Professora Sarita Mazzini Bruschi
