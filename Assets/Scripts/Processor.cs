@@ -39,7 +39,11 @@ public class Processor : MonoBehaviour {
 	public int regO1 = 0;
 	public int writeToMem = 0;
 
-	public MuxController muxone;
+	// Graphical game objects
+	public MuxController pcMux;
+	public RegisterController pcReg;
+	public RegisterFileController regFile;
+	public UlaController ula;
 
 	void Start(){
 		instructionMemory = new List<Instruction>();
@@ -52,8 +56,11 @@ public class Processor : MonoBehaviour {
 
 	void Update(){
 
-		muxone.SetName("MuxPc");
-		//muxone.SetOutput(30);
+		regFile.setValues(registerBank);
+		ula.setInputA(regA);
+		ula.setInputB(regB);
+		ula.setOutput(regO0);
+		pcReg.setValue(pc);
 
 		if(Input.GetKeyDown("h")){ 
 			helpEnabled = !helpEnabled;
@@ -66,16 +73,16 @@ public class Processor : MonoBehaviour {
 
 		if(Input.GetKeyDown("n") && !halted){
 			ncount = 1;
-			muxone.SetInput(pc+1, pipeline[1].op3, regB);
+			pcMux.SetInput(pc+1, pipeline[1].op3, regB);
 			NextStep();
-			muxone.SetOutput(pc);
+			pcMux.SetOutput(pc);
 		}
 		
 		if(Input.GetKey("n") && ncount++%10 == 0 && !halted){
 
-			muxone.SetInput(pc+1, pipeline[1].op3, regB);
+			pcMux.SetInput(pc+1, pipeline[1].op3, regB);
 			NextStep();
-			muxone.SetOutput(pc);
+			pcMux.SetOutput(pc);
 		}
 	}
 
@@ -261,8 +268,7 @@ public class Processor : MonoBehaviour {
 	/* End pipeline units */
 
 	public void ClearPipeline(){
-		for(int i = 0; i < code.Length; i++)
-			instructionMemory.Add(new Instruction(code[i]));
+		CodeStringToInstructionMemory();
 
 		for(int i = 0; i < 5; i++){
 			pipeline[i] = new Instruction();
