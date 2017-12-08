@@ -9,6 +9,7 @@ public class RegisterController : MonoBehaviour {
     public Text nameText;
     public Text valueText;
 
+
 	// Use this for initialization
 	void Start () {
 	    
