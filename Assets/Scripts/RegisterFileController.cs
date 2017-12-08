@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 [UnityEngine.SerializeField]
@@ -20,16 +21,11 @@ public class RegisterFileController : MonoBehaviour {
 		
 	}
 
-    public void setName(string newName)
-    {
-        nameText.text = newName;
-    }
-
     public void setValues(int[] newValues)
     {
-       r0.text = newValues[0].toString();
-       r1.text = newValues[1].toString();
-       r2.text = newValues[2].toString();
-       r3.text = newValues[3].toString();
+       r0.text = newValues[0].ToString();
+       r1.text = newValues[1].ToString();
+       r2.text = newValues[2].ToString();
+       r3.text = newValues[3].ToString();
     }
 }

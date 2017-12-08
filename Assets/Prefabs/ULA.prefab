@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 114846226003895188}
   - component: {fileID: 114743019660531326}
   m_Layer: 5
-  m_Name: ULA 1
+  m_Name: ULA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
