@@ -44,6 +44,8 @@ public class Processor : MonoBehaviour {
 	// Graphical game objects
 	public MuxController pcMux;
 	public RegisterController pcReg;
+	public RegisterController A, B;
+	public RegisterController O0, O1;
 	public RegisterFileController regFile;
 	public UlaController ula;
 	public InputField getInstr;
@@ -66,6 +68,10 @@ public class Processor : MonoBehaviour {
 		ula.setInputB(regB);
 		ula.setOutput(regO0);
 		pcReg.setValue(pc);
+		A.setValue(regA);
+		B.setValue(regB);
+		O0.setValue(regO0);
+		O1.setValue(regO1);
 
 		if(Input.GetKeyDown("h")) { 
 			helpEnabled = !helpEnabled;
