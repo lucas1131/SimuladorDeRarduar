@@ -61,11 +61,15 @@ public class Instruction {
 	public Instruction(string icode){
 		icode = icode.ToUpper();
 		this.icode = icode;
+
+
 		this.Parse(icode);
 		this.type = Instruction.InstructionSet[this.iname];
 	}
 
 	private void Parse(string icode){
+		
+		Debug.Log(icode);
 		
 		string[] parts = icode.Split(SEPARATOR);
 		this.iname = parts[0];
