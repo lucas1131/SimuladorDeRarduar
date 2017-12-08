@@ -11,8 +11,8 @@ public class RegisterFileController : MonoBehaviour {
 	public Text r2;
 	public Text r3;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 	}
 	
 	// Update is called once per frame
